@@ -4,7 +4,7 @@
 
 use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
-use tracing::{info, debug};
+use tracing::info;
 
 use crate::error::{Result, RDroidError};
 
@@ -222,7 +222,7 @@ impl Project {
         Ok(ProjectMetadata::default())
     }
 
-    async fn load_gradle_metadata(path: &PathBuf) -> Result<ProjectMetadata> {
+    async fn load_gradle_metadata(_path: &PathBuf) -> Result<ProjectMetadata> {
         // This would parse build.gradle files to extract metadata
         // Simplified implementation for now
         Ok(ProjectMetadata::default())

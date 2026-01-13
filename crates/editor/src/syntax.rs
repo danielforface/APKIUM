@@ -214,7 +214,7 @@ impl SyntaxHighlighter {
 
 // Highlight queries for different languages
 
-const RUST_HIGHLIGHTS: &str = r#"
+const RUST_HIGHLIGHTS: &str = r##"
 ; Keywords
 "fn" @keyword.function
 "let" @keyword
@@ -301,4 +301,9 @@ const RUST_HIGHLIGHTS: &str = r#"
 "=>" @operator
 "::" @operator
 "." @operator
-"#"
+"#" @operator
+"##;
+
+const KOTLIN_HIGHLIGHTS: &str = "";
+const JAVA_HIGHLIGHTS: &str = "";
+const XML_HIGHLIGHTS: &str = "";

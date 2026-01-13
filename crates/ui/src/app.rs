@@ -5,17 +5,15 @@
 use std::sync::Arc;
 use std::path::PathBuf;
 use parking_lot::RwLock;
-use tracing::{info, debug, error};
+use tracing::{info, debug};
+use slint::ComponentHandle;
 
 use r_droid_core::{
     Orchestrator, 
-    AppConfig, 
-    Workspace, 
-    Event,
-    events::EventBus,
+    AppConfig,
 };
 
-use crate::{MainWindow, NewProjectDialog, SettingsDialog};
+use crate::MainWindow;
 
 /// File tree item for UI binding
 #[derive(Clone, Debug)]
@@ -227,7 +225,7 @@ impl App {
     pub async fn open_file(&self, path: PathBuf) -> anyhow::Result<()> {
         let content = tokio::fs::read_to_string(&path).await?;
         let filename = path.file_name()
-            .map(|n| n.to_string_lossy().to_string())
+            .and_then(|n| n.to_str().map(|s| s.to_string()))
             .unwrap_or_else(|| "untitled".into());
         
         let mut state = self.state.write();

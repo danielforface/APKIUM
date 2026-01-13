@@ -41,19 +41,17 @@ async fn main() -> Result<()> {
     
     // Auto-detect Android toolchain
     info!("Detecting Android development environment...");
-    let detector = android_toolchain::ToolchainDetector::new();
     
-    if let Some(sdk) = detector.detect_sdk() {
-        info!("Found Android SDK: {:?}", sdk.path);
-    } else {
-        info!("Android SDK not found. Use the toolchain manager to download.");
+    match android_toolchain::ToolchainDetector::detect_sdk().await {
+        Ok(sdk) => info!("Found Android SDK: {:?}", sdk.path),
+        Err(_) => info!("Android SDK not found. Use the toolchain manager to download."),
     }
     
-    if let Some(ndk) = detector.detect_ndk() {
+    if let Ok(ndk) = android_toolchain::ToolchainDetector::detect_ndk().await {
         info!("Found Android NDK: {:?}", ndk.path);
     }
     
-    if let Some(jdk) = detector.detect_jdk() {
+    if let Ok(jdk) = android_toolchain::ToolchainDetector::detect_jdk().await {
         info!("Found JDK: {:?}", jdk.path);
     }
 

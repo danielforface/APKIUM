@@ -9,7 +9,7 @@
 use std::sync::Arc;
 use parking_lot::RwLock;
 use tokio::sync::mpsc;
-use tracing::{info, warn, error, debug};
+use tracing::{info, debug};
 
 use crate::{
     config::AppConfig,
@@ -90,14 +90,10 @@ impl Orchestrator {
     pub async fn initialize(&self) -> Result<()> {
         info!("Initializing R-Droid Orchestrator...");
         
-        // Parallel initialization using Rust's async capabilities
-        let init_futures = vec![
-            self.init_config_watcher(),
-            self.init_file_watcher(),
-            self.init_lsp_manager(),
-        ];
-        
-        futures::future::try_join_all(init_futures).await?;
+        // Initialize subsystems sequentially for reliability
+        self.init_config_watcher().await?;
+        self.init_file_watcher().await?;
+        self.init_lsp_manager().await?;
         
         self.set_state(AppState::Ready);
         info!("Orchestrator initialized successfully");

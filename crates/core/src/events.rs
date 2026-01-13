@@ -2,7 +2,6 @@
 //! 
 //! Provides a pub/sub event bus for inter-component communication.
 
-use std::sync::Arc;
 use parking_lot::RwLock;
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use tracing::debug;
@@ -69,6 +68,7 @@ pub enum LogLevel {
 }
 
 /// Subscriber handle for receiving events
+#[derive(Clone)]
 pub struct EventSubscription {
     receiver: Receiver<Event>,
 }
@@ -157,11 +157,10 @@ impl AsyncEventStream {
 
     /// Wait for the next event asynchronously
     pub async fn next(&self) -> Option<Event> {
-        let subscription = &self.subscription;
-        tokio::task::spawn_blocking(move || {
-            // This is a simplified version - in production you'd use proper async channels
-        }).await.ok();
-        self.subscription.try_recv().ok()
+        tokio::task::spawn_blocking({
+            let subscription = self.subscription.clone();
+            move || subscription.try_recv().ok()
+        }).await.ok().flatten()
     }
 }
 

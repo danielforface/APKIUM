@@ -10,7 +10,7 @@ pub mod logcat;
 
 pub use avd::{AvdManager, AvdConfig, AvdInfo};
 pub use emulator::{EmulatorLauncher, EmulatorInstance, EmulatorOptions};
-pub use adb::{AdbClient, AdbDevice, AdbCommand};
+pub use adb::{AdbClient, AdbCommand};
 pub use device::{Device, DeviceState, DeviceType};
 pub use logcat::{LogcatReader, LogEntry, LogLevel};
 

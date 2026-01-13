@@ -4,9 +4,8 @@
 
 use std::path::PathBuf;
 use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
-use tokio::sync::RwLock;
-use tracing::{info, debug};
+// use serde::{Deserialize, Serialize};
+use tracing::info;
 
 use crate::error::{Result, RDroidError};
 use crate::project::Project;

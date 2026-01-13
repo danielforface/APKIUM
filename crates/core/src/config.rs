@@ -334,19 +334,19 @@ impl AppConfig {
             // Auto-detect common paths
             let candidates = if cfg!(windows) {
                 vec![
-                    dirs::home_dir().map(|h| h.join("AppData").join("Local").join("Android").join("Sdk")),
+                    dirs::config_local_dir().map(|d| d.join("Android").join("Sdk")),
                     Some(PathBuf::from("C:\\Android\\sdk")),
                 ]
             } else {
                 vec![
-                    dirs::home_dir().map(|h| h.join("Android").join("Sdk")),
+                    dirs::home_dir().map(|h: PathBuf| h.join("Android").join("Sdk")),
                     Some(PathBuf::from("/usr/local/android-sdk")),
                 ]
             };
 
             candidates.into_iter()
                 .flatten()
-                .find(|p| p.exists())
+                .find(|p: &PathBuf| p.exists())
         })
     }
 }

@@ -78,27 +78,22 @@ component GlassPanel inherits Rectangle {
         background: @linear-gradient(180deg, #ffffff08 0%, #ffffff00 100%);
     }
     
-    if show-header && title != "": VerticalLayout {
+    VerticalLayout {
         padding: Theme.spacing-md;
         spacing: Theme.spacing-sm;
         
-        Text {
+        if show-header && title != "": Text {
             text: title;
             color: Theme.text-primary;
             font-size: 14px;
             font-weight: 600;
         }
         
-        Rectangle {
+        if show-header && title != "": Rectangle {
             height: 1px;
             background: Theme.border;
         }
         
-        @children
-    }
-    
-    if !show-header || title == "": VerticalLayout {
-        padding: Theme.spacing-md;
         @children
     }
 }
@@ -114,7 +109,6 @@ component NeonButton inherits Rectangle {
     callback clicked();
     
     min-width: 80px;
-    min-height: 36px;
     height: 36px;
     background: enabled ? (touch.pressed ? button-color.darker(0.2) : (touch.has-hover ? button-color.brighter(0.1) : button-color)) : Theme.surface;
     border-radius: Theme.radius-md;
@@ -333,7 +327,7 @@ component EditorTab inherits Rectangle {
                 
                 Text {
                     text: "✕";
-                    color: parent.parent.has-hover ? Theme.error : Theme.text-muted;
+                    color: parent.background == Theme.error.with-alpha(0.2) ? Theme.error : Theme.text-muted;
                     font-size: 12px;
                     horizontal-alignment: center;
                     vertical-alignment: center;
@@ -437,7 +431,7 @@ export component MainWindow inherits Window {
         Rectangle {
             height: 48px;
             background: Theme.surface;
-            border-width: 0 0 1px 0;
+            border-width: 1px;
             border-color: Theme.border;
             
             HorizontalLayout {
@@ -566,7 +560,7 @@ export component MainWindow inherits Window {
             if sidebar-visible: Rectangle {
                 width: sidebar-width * 1px;
                 background: Theme.surface;
-                border-width: 0 1px 0 0;
+                border-width: 1px;
                 border-color: Theme.border;
                 
                 VerticalLayout {
@@ -614,7 +608,7 @@ export component MainWindow inherits Window {
                 Rectangle {
                     height: 40px;
                     background: Theme.surface;
-                    border-width: 0 0 1px 0;
+                    border-width: 1px;
                     border-color: Theme.border;
                     
                     HorizontalLayout {
@@ -679,7 +673,7 @@ export component MainWindow inherits Window {
                 if console-visible: Rectangle {
                     height: console-height * 1px;
                     background: Theme.surface;
-                    border-width: 1px 0 0 0;
+                    border-width: 1px;
                     border-color: Theme.border;
                     
                     VerticalLayout {
@@ -733,7 +727,7 @@ export component MainWindow inherits Window {
             if preview-visible: Rectangle {
                 width: preview-width * 1px;
                 background: Theme.surface;
-                border-width: 0 0 0 1px;
+                border-width: 1px;
                 border-color: Theme.border;
                 
                 VerticalLayout {
@@ -797,7 +791,7 @@ export component MainWindow inherits Window {
                                         width: 100%;
                                         height: 24px;
                                         background: Theme.surface-elevated;
-                                        border-radius: 20px 20px 0 0;
+                                        border-top-left-radius: 20px; border-top-right-radius: 20px;
                                         
                                         HorizontalLayout {
                                             padding-left: Theme.spacing-md;
@@ -858,7 +852,7 @@ export component MainWindow inherits Window {
         Rectangle {
             height: 24px;
             background: Theme.surface;
-            border-width: 1px 0 0 0;
+            border-width: 1px;
             border-color: Theme.border;
             
             HorizontalLayout {
@@ -1068,7 +1062,7 @@ export component SettingsDialog inherits Window {
         Rectangle {
             width: 180px;
             background: Theme.surface;
-            border-width: 0 1px 0 0;
+            border-width: 1px;
             border-color: Theme.border;
             
             VerticalLayout {

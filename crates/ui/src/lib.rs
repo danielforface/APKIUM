@@ -13,7 +13,7 @@ slint::include_modules!();
 
 /// Run the R-Droid UI application
 pub fn run() -> Result<()> {
-    let app = App::new()?;
-    app.run()?;
+    let app = App::new();
+    app.run().map_err(|e| anyhow::anyhow!("Slint error: {}", e))?;
     Ok(())
 }

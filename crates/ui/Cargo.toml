@@ -10,6 +10,7 @@ slint = "1.3"
 tokio = { workspace = true }
 tracing = { workspace = true }
 anyhow = { workspace = true }
+serde = { workspace = true }
 r-droid-core = { path = "../core" }
 parking_lot = "0.12"
 once_cell = "1.19"

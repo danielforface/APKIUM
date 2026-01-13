@@ -3,7 +3,7 @@
 //! High-level editor commands that can be executed and undone.
 
 use crate::buffer::{Position, TextBuffer};
-use crate::cursor::{Cursor, Direction};
+use crate::cursor::Direction;
 use crate::selection::Selection;
 
 /// Editor command type
@@ -121,8 +121,12 @@ impl CommandExecutor {
             // Movement commands
             Command::MoveCursor(direction) => {
                 let line_count = buffer.line_count();
+                let mut line_lengths = Vec::new();
+                for i in 0..line_count {
+                    line_lengths.push(buffer.line(i).map(|l| l.len_chars()).unwrap_or(0));
+                }
                 buffer.cursor_mut().move_direction(direction, line_count, |line| {
-                    buffer.line(line).map(|l| l.len_chars()).unwrap_or(0)
+                    line_lengths.get(line).copied().unwrap_or(0)
                 });
                 buffer.set_selection(None);
                 CommandResult::ok()

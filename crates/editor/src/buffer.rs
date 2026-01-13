@@ -6,7 +6,6 @@
 use ropey::{Rope, RopeSlice};
 use std::ops::Range;
 use std::path::PathBuf;
-use tracing::debug;
 
 use crate::cursor::Cursor;
 use crate::selection::Selection;

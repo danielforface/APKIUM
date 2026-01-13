@@ -6,6 +6,8 @@ description = "Core orchestrator and shared types for R-Droid IDE"
 
 [dependencies]
 tokio = { workspace = true }
+tokio-util = "0.7"
+futures = "0.3"
 tracing = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
@@ -18,3 +20,5 @@ crossbeam-channel = "0.5"
 uuid = { version = "1.6", features = ["v4"] }
 chrono = { version = "0.4", features = ["serde"] }
 directories = "5.0"
+num_cpus = "1.16"
+dirs = "5.0"
