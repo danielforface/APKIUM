@@ -6,12 +6,12 @@ description = "Android SDK/NDK/JDK detection, download, and management for R-Dro
 
 [dependencies]
 r-droid-core = { path = "../core" }
-tokio = { version = "1.35", features = ["full", "process"] }
-tracing = "0.1"
-anyhow = "1.0"
-thiserror = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+tokio = { workspace = true, features = ["process"] }
+tracing = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 reqwest = { version = "0.11", features = ["json", "stream"] }
 zip = "0.6"
 tar = "0.4"

@@ -1,5 +1,5 @@
 [package]
-name = "rdroid-emulator-bridge"
+name = "r-droid-emulator-bridge"
 version = "0.1.0"
 edition = "2021"
 description = "Android Emulator Bridge for R-Droid IDE"

@@ -1,5 +1,5 @@
 [package]
-name = "rdroid-build-engine"
+name = "r-droid-build-engine"
 version = "0.1.0"
 edition = "2021"
 description = "Android Build Engine for R-Droid IDE"

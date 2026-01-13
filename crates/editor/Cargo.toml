@@ -6,12 +6,12 @@ description = "High-performance code editor for R-Droid IDE"
 
 [dependencies]
 r-droid-core = { path = "../core" }
-tokio = { version = "1.35", features = ["full"] }
-tracing = "0.1"
-anyhow = "1.0"
-thiserror = "1.0"
+tokio = { workspace = true }
+tracing = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
 parking_lot = "0.12"
-ropey = "1.6"  # Rope data structure for efficient text editing
+ropey = "1.6"
 tree-sitter = "0.22"
 tree-sitter-rust = "0.21"
 tree-sitter-kotlin = "0.3"

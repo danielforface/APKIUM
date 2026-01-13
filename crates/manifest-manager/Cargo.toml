@@ -1,5 +1,5 @@
 [package]
-name = "rdroid-manifest-manager"
+name = "r-droid-manifest-manager"
 version = "0.1.0"
 edition = "2021"
 description = "Android Manifest and Permission Manager for R-Droid IDE"
