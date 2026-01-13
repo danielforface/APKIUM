@@ -1,0 +1,11 @@
+# R-Droid Installer Dependencies
+
+# Core dependencies
+pathlib>=1.0
+hashlib>=1.0
+
+# Build tools (optional, for advanced features)
+# pyinstaller>=6.0  # For creating standalone Python tools
+
+# Note: Most dependencies are standard library modules
+# WiX Toolset v4 must be installed separately from https://wixtoolset.org/
