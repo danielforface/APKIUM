@@ -224,7 +224,7 @@ pub enum ToolchainAction {
 impl ToolchainCommand {
     /// Execute the toolchain command
     pub async fn execute(&self) -> Result<()> {
-        use r_droid_android_toolchain::{ToolchainDetector, Downloader};
+        use r_droid_android_toolchain::{ToolchainDetector, ToolchainDownloader};
         
         let detector = ToolchainDetector::new();
         
@@ -252,7 +252,7 @@ impl ToolchainCommand {
                 }
             }
             ToolchainAction::Install { component } => {
-                let downloader = Downloader::new();
+                let downloader = ToolchainDownloader::new();
                 
                 match component.as_str() {
                     "sdk" => {

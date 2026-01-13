@@ -1,0 +1,307 @@
+// R-Droid 2026 - Dark Neon Theme for Slint
+// Glassmorphism design with fluid animations
+
+// Export theme for use across all UI components
+export global Theme {
+    // Primary Colors - Neon Accents
+    out property <color> neon-cyan: #00ffff;
+    out property <color> neon-magenta: #ff00ff;
+    out property <color> neon-green: #00ff88;
+    out property <color> neon-orange: #ff6600;
+    out property <color> neon-purple: #8b00ff;
+    
+    // Background Colors - Deep Dark
+    out property <color> bg-primary: #0a0a12;
+    out property <color> bg-secondary: #12121a;
+    out property <color> bg-tertiary: #1a1a24;
+    out property <color> bg-elevated: #22222e;
+    
+    // Glass Effect Colors
+    out property <color> glass-bg: #1a1a26b3; // rgba(26, 26, 38, 0.7)
+    out property <color> glass-border: #00ffff33; // rgba(0, 255, 255, 0.2)
+    
+    // Text Colors
+    out property <color> text-primary: #ffffff;
+    out property <color> text-secondary: #a0a0b0;
+    out property <color> text-muted: #606070;
+    out property <color> text-accent: #00ffff;
+    
+    // Semantic Colors
+    out property <color> success: #00ff88;
+    out property <color> warning: #ffaa00;
+    out property <color> error: #ff4455;
+    out property <color> info: #00aaff;
+    
+    // Syntax Highlighting Colors
+    out property <color> syntax-keyword: #ff79c6;
+    out property <color> syntax-string: #f1fa8c;
+    out property <color> syntax-number: #bd93f9;
+    out property <color> syntax-comment: #6272a4;
+    out property <color> syntax-function: #50fa7b;
+    out property <color> syntax-type: #8be9fd;
+    out property <color> syntax-variable: #f8f8f2;
+    out property <color> syntax-operator: #ff79c6;
+    
+    // Spacing Scale
+    out property <length> space-xs: 4px;
+    out property <length> space-sm: 8px;
+    out property <length> space-md: 16px;
+    out property <length> space-lg: 24px;
+    out property <length> space-xl: 32px;
+    out property <length> space-xxl: 48px;
+    
+    // Border Radius
+    out property <length> radius-sm: 4px;
+    out property <length> radius-md: 8px;
+    out property <length> radius-lg: 12px;
+    out property <length> radius-xl: 16px;
+    
+    // Animation Durations
+    out property <duration> transition-fast: 150ms;
+    out property <duration> transition-normal: 250ms;
+    out property <duration> transition-slow: 400ms;
+    
+    // Font Sizes
+    out property <length> text-xs: 11px;
+    out property <length> text-sm: 12px;
+    out property <length> text-base: 14px;
+    out property <length> text-lg: 16px;
+    out property <length> text-xl: 18px;
+    out property <length> text-2xl: 24px;
+    out property <length> text-3xl: 32px;
+    
+    // Icon Sizes
+    out property <length> icon-sm: 16px;
+    out property <length> icon-md: 20px;
+    out property <length> icon-lg: 24px;
+    out property <length> icon-xl: 32px;
+}
+
+// Glass Panel Component
+export component GlassPanel inherits Rectangle {
+    background: Theme.glass-bg;
+    border-color: Theme.glass-border;
+    border-width: 1px;
+    border-radius: Theme.radius-lg;
+    drop-shadow-color: #00000080;
+    drop-shadow-blur: 16px;
+    drop-shadow-offset-y: 8px;
+}
+
+// Neon Button Component
+export component NeonButton inherits Rectangle {
+    in property <string> text;
+    in property <color> accent: Theme.neon-cyan;
+    out property <bool> hovered: touch.has-hover;
+    out property <bool> pressed: touch.pressed;
+    callback clicked;
+    
+    min-width: 80px;
+    min-height: 36px;
+    border-radius: Theme.radius-md;
+    background: hovered ? accent.with-alpha(0.2) : transparent;
+    border-color: accent;
+    border-width: 1px;
+    
+    animate background { duration: Theme.transition-fast; }
+    animate border-color { duration: Theme.transition-fast; }
+    
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+    
+    Text {
+        text: root.text;
+        color: hovered ? accent : Theme.text-primary;
+        font-size: Theme.text-base;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        
+        animate color { duration: Theme.transition-fast; }
+    }
+}
+
+// Icon Button Component
+export component IconButton inherits Rectangle {
+    in property <image> icon;
+    in property <color> accent: Theme.neon-cyan;
+    out property <bool> hovered: touch.has-hover;
+    callback clicked;
+    
+    width: 32px;
+    height: 32px;
+    border-radius: Theme.radius-sm;
+    background: hovered ? accent.with-alpha(0.15) : transparent;
+    
+    animate background { duration: Theme.transition-fast; }
+    
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+    
+    Image {
+        width: Theme.icon-md;
+        height: Theme.icon-md;
+        source: root.icon;
+        colorize: hovered ? accent : Theme.text-secondary;
+        
+        animate colorize { duration: Theme.transition-fast; }
+    }
+}
+
+// Tab Component
+export component Tab inherits Rectangle {
+    in property <string> label;
+    in property <bool> active: false;
+    callback clicked;
+    
+    min-width: 100px;
+    height: 36px;
+    border-radius: Theme.radius-sm;
+    background: active ? Theme.neon-cyan.with-alpha(0.15) : (touch.has-hover ? Theme.bg-elevated : transparent);
+    
+    animate background { duration: Theme.transition-fast; }
+    
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+    
+    HorizontalLayout {
+        padding-left: Theme.space-md;
+        padding-right: Theme.space-md;
+        
+        Text {
+            text: root.label;
+            color: active ? Theme.neon-cyan : Theme.text-secondary;
+            font-size: Theme.text-sm;
+            vertical-alignment: center;
+            
+            animate color { duration: Theme.transition-fast; }
+        }
+    }
+    
+    // Active indicator
+    Rectangle {
+        y: parent.height - 2px;
+        height: 2px;
+        background: active ? Theme.neon-cyan : transparent;
+        border-radius: 1px;
+        
+        animate background { duration: Theme.transition-normal; }
+    }
+}
+
+// Text Input Component
+export component NeonTextInput inherits Rectangle {
+    in-out property <string> text;
+    in property <string> placeholder: "";
+    in property <bool> has-focus: input.has-focus;
+    callback edited(string);
+    callback accepted(string);
+    
+    height: 36px;
+    border-radius: Theme.radius-md;
+    background: Theme.bg-tertiary;
+    border-color: has-focus ? Theme.neon-cyan : Theme.glass-border;
+    border-width: 1px;
+    
+    animate border-color { duration: Theme.transition-fast; }
+    
+    HorizontalLayout {
+        padding-left: Theme.space-md;
+        padding-right: Theme.space-md;
+        
+        input := TextInput {
+            text <=> root.text;
+            font-size: Theme.text-base;
+            color: Theme.text-primary;
+            selection-background-color: Theme.neon-cyan.with-alpha(0.3);
+            selection-foreground-color: Theme.text-primary;
+            vertical-alignment: center;
+            
+            edited => { root.edited(self.text); }
+            accepted => { root.accepted(self.text); }
+        }
+    }
+    
+    // Placeholder text
+    Text {
+        x: Theme.space-md;
+        visible: root.text == "";
+        text: root.placeholder;
+        color: Theme.text-muted;
+        font-size: Theme.text-base;
+        vertical-alignment: center;
+    }
+}
+
+// Status Badge Component
+export component StatusBadge inherits Rectangle {
+    in property <string> text;
+    in property <color> color: Theme.info;
+    
+    min-width: 60px;
+    height: 22px;
+    border-radius: 11px;
+    background: color.with-alpha(0.2);
+    border-color: color.with-alpha(0.5);
+    border-width: 1px;
+    
+    HorizontalLayout {
+        padding-left: Theme.space-sm;
+        padding-right: Theme.space-sm;
+        
+        Text {
+            text: root.text;
+            color: root.color;
+            font-size: Theme.text-xs;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// Progress Bar Component
+export component NeonProgressBar inherits Rectangle {
+    in property <float> progress: 0.5; // 0.0 to 1.0
+    in property <color> color: Theme.neon-cyan;
+    
+    height: 4px;
+    border-radius: 2px;
+    background: Theme.bg-tertiary;
+    
+    Rectangle {
+        width: parent.width * clamp(progress, 0, 1);
+        height: 100%;
+        border-radius: parent.border-radius;
+        background: color;
+        
+        animate width { duration: Theme.transition-normal; }
+    }
+}
+
+// Tooltip Component
+export component Tooltip inherits Rectangle {
+    in property <string> text;
+    in property <bool> visible: false;
+    
+    opacity: visible ? 1.0 : 0.0;
+    background: Theme.bg-elevated;
+    border-color: Theme.glass-border;
+    border-width: 1px;
+    border-radius: Theme.radius-sm;
+    drop-shadow-color: #00000080;
+    drop-shadow-blur: 8px;
+    
+    animate opacity { duration: Theme.transition-fast; }
+    
+    HorizontalLayout {
+        padding: Theme.space-sm;
+        
+        Text {
+            text: root.text;
+            color: Theme.text-secondary;
+            font-size: Theme.text-xs;
+        }
+    }
+}
