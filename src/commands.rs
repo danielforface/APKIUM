@@ -17,7 +17,7 @@ pub struct BuildCommand {
 impl BuildCommand {
     /// Execute the build command
     pub async fn execute(&self) -> Result<PathBuf> {
-        use rdroid_build_engine::{BuildConfig, BuildRunner, BuildVariant, AbiTarget};
+        use r_droid_build_engine::{BuildConfig, BuildRunner, BuildVariant, AbiTarget};
         
         info!("Building project: {:?}", self.project_path);
         
@@ -62,8 +62,8 @@ pub struct RunCommand {
 impl RunCommand {
     /// Execute the run command
     pub async fn execute(&self) -> Result<()> {
-        use rdroid_build_engine::{BuildConfig, BuildRunner, BuildVariant, AbiTarget};
-        use rdroid_emulator_bridge::AdbClient;
+        use r_droid_build_engine::{BuildConfig, BuildRunner, BuildVariant, AbiTarget};
+        use r_droid_emulator_bridge::AdbClient;
         
         info!("Building and running: {:?}", self.project_path);
         
@@ -119,7 +119,7 @@ pub struct DevicesCommand;
 impl DevicesCommand {
     /// List all connected devices
     pub async fn execute(&self) -> Result<()> {
-        use rdroid_emulator_bridge::AdbClient;
+        use r_droid_emulator_bridge::AdbClient;
         
         let adb = AdbClient::new()?;
         let devices = adb.list_devices().await?;
@@ -160,7 +160,7 @@ pub enum AvdAction {
 impl AvdCommand {
     /// Execute the AVD command
     pub async fn execute(&self) -> Result<()> {
-        use rdroid_emulator_bridge::{AvdManager, AvdConfig, EmulatorLauncher};
+        use r_droid_emulator_bridge::{AvdManager, AvdConfig, EmulatorLauncher};
         
         let sdk_path = std::env::var("ANDROID_HOME")
             .or_else(|_| std::env::var("ANDROID_SDK_ROOT"))
@@ -224,7 +224,7 @@ pub enum ToolchainAction {
 impl ToolchainCommand {
     /// Execute the toolchain command
     pub async fn execute(&self) -> Result<()> {
-        use rdroid_android_toolchain::{ToolchainDetector, Downloader};
+        use r_droid_android_toolchain::{ToolchainDetector, Downloader};
         
         let detector = ToolchainDetector::new();
         

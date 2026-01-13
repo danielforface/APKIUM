@@ -32,17 +32,17 @@ pub mod commands;
 pub mod project;
 
 // Re-export main components for library usage
-pub use rdroid_core as core;
-pub use rdroid_android_toolchain as toolchain;
-pub use rdroid_manifest_manager as manifest;
-pub use rdroid_emulator_bridge as emulator;
-pub use rdroid_build_engine as build;
+pub use r_droid_core as core;
+pub use r_droid_android_toolchain as toolchain;
+pub use r_droid_manifest_manager as manifest;
+pub use r_droid_emulator_bridge as emulator;
+pub use r_droid_build_engine as build;
 
 /// Prelude module for convenient imports
 pub mod prelude {
-    pub use rdroid_core::config::AppConfig;
-    pub use rdroid_android_toolchain::{ToolchainDetector, SdkManager};
-    pub use rdroid_manifest_manager::{ManifestParser, ManifestWriter};
-    pub use rdroid_emulator_bridge::{AdbClient, AvdManager, EmulatorLauncher};
-    pub use rdroid_build_engine::{BuildRunner, BuildConfig};
+    pub use r_droid_core::config::AppConfig;
+    pub use r_droid_android_toolchain::{ToolchainDetector, SdkManager};
+    pub use r_droid_manifest_manager::{ManifestParser, ManifestWriter};
+    pub use r_droid_emulator_bridge::{AdbClient, AvdManager, EmulatorLauncher};
+    pub use r_droid_build_engine::{BuildRunner, BuildConfig};
 }

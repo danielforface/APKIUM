@@ -4,18 +4,14 @@
 //! and launches the UI.
 
 use std::path::PathBuf;
-use tracing::{info, error, Level};
+use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 use anyhow::Result;
 
-// Re-export crates
-pub use rdroid_core as core;
-pub use rdroid_ui as ui;
-pub use rdroid_editor as editor;
-pub use rdroid_android_toolchain as android_toolchain;
-pub use rdroid_manifest_manager as manifest_manager;
-pub use rdroid_emulator_bridge as emulator_bridge;
-pub use rdroid_build_engine as build_engine;
+// Re-export crates with simpler names
+use r_droid_core as core;
+use r_droid_ui as ui;
+use r_droid_android_toolchain as android_toolchain;
 
 /// Application version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
