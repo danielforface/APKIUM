@@ -1,0 +1,70 @@
+# Build artifacts
+/target
+/dist
+
+# Dependency directories
+/node_modules
+
+# IDE and editor
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Rust
+*.rs.bk
+Cargo.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+ENV/
+
+# Logs
+*.log
+logs/
+
+# Android
+*.apk
+*.aab
+*.keystore
+*.jks
+local.properties
+
+# Installer artifacts
+*.msi
+*.wixobj
+*.wixpdb
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Cache
+.cache/
+*.cache
+
+# Coverage
+*.gcno
+*.gcda
+*.gcov
+coverage/
+lcov.info
+
+# Documentation builds
+/docs/build/
