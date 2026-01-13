@@ -1,0 +1,1162 @@
+// R-Droid 2026 - Main UI Definition
+// Dark Neon Theme with Glassmorphism Effects
+
+import { Button, LineEdit, ScrollView, ListView, StandardButton, ComboBox, ProgressIndicator, Spinner } from "std-widgets.slint";
+
+// ============================================================================
+// THEME & COLORS - 2026 Dark Neon Aesthetic
+// ============================================================================
+
+export global Theme {
+    // Primary Colors
+    out property <color> background: #0a0a0f;
+    out property <color> surface: #12121a;
+    out property <color> surface-elevated: #1a1a24;
+    out property <color> surface-glass: #1a1a2480;
+    
+    // Accent Colors
+    out property <color> primary: #6366f1;
+    out property <color> primary-hover: #818cf8;
+    out property <color> secondary: #22d3ee;
+    out property <color> accent: #f472b6;
+    out property <color> success: #34d399;
+    out property <color> warning: #fbbf24;
+    out property <color> error: #f87171;
+    
+    // Text Colors
+    out property <color> text-primary: #f8fafc;
+    out property <color> text-secondary: #94a3b8;
+    out property <color> text-muted: #64748b;
+    
+    // Border & Effects
+    out property <color> border: #2d2d3a;
+    out property <color> border-focus: #6366f1;
+    out property <color> glow: #6366f140;
+    
+    // Syntax Highlighting Colors
+    out property <color> syntax-keyword: #c792ea;
+    out property <color> syntax-string: #c3e88d;
+    out property <color> syntax-number: #f78c6c;
+    out property <color> syntax-comment: #546e7a;
+    out property <color> syntax-function: #82aaff;
+    out property <color> syntax-type: #ffcb6b;
+    
+    // Dimensions
+    out property <length> radius-sm: 4px;
+    out property <length> radius-md: 8px;
+    out property <length> radius-lg: 12px;
+    out property <length> spacing-xs: 4px;
+    out property <length> spacing-sm: 8px;
+    out property <length> spacing-md: 16px;
+    out property <length> spacing-lg: 24px;
+    
+    // Animation
+    out property <duration> animation-fast: 150ms;
+    out property <duration> animation-normal: 250ms;
+    out property <duration> animation-slow: 400ms;
+}
+
+// ============================================================================
+// REUSABLE COMPONENTS
+// ============================================================================
+
+// Glass Panel Component with blur effect
+component GlassPanel inherits Rectangle {
+    in property <string> title: "";
+    in property <bool> show-header: true;
+    
+    background: Theme.surface-glass;
+    border-radius: Theme.radius-lg;
+    border-width: 1px;
+    border-color: Theme.border;
+    clip: true;
+    
+    // Subtle gradient overlay for glass effect
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: @linear-gradient(180deg, #ffffff08 0%, #ffffff00 100%);
+    }
+    
+    if show-header && title != "": VerticalLayout {
+        padding: Theme.spacing-md;
+        spacing: Theme.spacing-sm;
+        
+        Text {
+            text: title;
+            color: Theme.text-primary;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        Rectangle {
+            height: 1px;
+            background: Theme.border;
+        }
+        
+        @children
+    }
+    
+    if !show-header || title == "": VerticalLayout {
+        padding: Theme.spacing-md;
+        @children
+    }
+}
+
+// Neon Button with glow effect
+component NeonButton inherits Rectangle {
+    in property <string> text: "Button";
+    in property <color> button-color: Theme.primary;
+    in property <bool> enabled: true;
+    in property <image> icon;
+    in property <bool> show-icon: false;
+    
+    callback clicked();
+    
+    min-width: 80px;
+    min-height: 36px;
+    height: 36px;
+    background: enabled ? (touch.pressed ? button-color.darker(0.2) : (touch.has-hover ? button-color.brighter(0.1) : button-color)) : Theme.surface;
+    border-radius: Theme.radius-md;
+    
+    // Glow effect on hover
+    drop-shadow-blur: touch.has-hover && enabled ? 12px : 0px;
+    drop-shadow-color: button-color;
+    drop-shadow-offset-y: 0px;
+    
+    animate background { duration: Theme.animation-fast; }
+    animate drop-shadow-blur { duration: Theme.animation-normal; }
+    
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => { root.clicked(); }
+        mouse-cursor: enabled ? pointer : default;
+    }
+    
+    HorizontalLayout {
+        padding-left: Theme.spacing-md;
+        padding-right: Theme.spacing-md;
+        spacing: Theme.spacing-sm;
+        alignment: center;
+        
+        if show-icon: Image {
+            source: icon;
+            width: 16px;
+            height: 16px;
+            colorize: Theme.text-primary;
+        }
+        
+        Text {
+            text: root.text;
+            color: enabled ? Theme.text-primary : Theme.text-muted;
+            font-size: 13px;
+            font-weight: 500;
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+    }
+}
+
+// Icon Button
+component IconButton inherits Rectangle {
+    in property <image> icon;
+    in property <string> tooltip: "";
+    in property <bool> active: false;
+    
+    callback clicked();
+    
+    width: 32px;
+    height: 32px;
+    background: active ? Theme.primary.with-alpha(0.2) : (touch.has-hover ? Theme.surface-elevated : transparent);
+    border-radius: Theme.radius-sm;
+    
+    animate background { duration: Theme.animation-fast; }
+    
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+    
+    Image {
+        source: icon;
+        width: 18px;
+        height: 18px;
+        colorize: active ? Theme.primary : Theme.text-secondary;
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+    }
+}
+
+// File Tree Item
+component FileTreeItem inherits Rectangle {
+    in property <string> name: "file.rs";
+    in property <bool> is-folder: false;
+    in property <int> indent-level: 0;
+    in property <bool> expanded: false;
+    in property <bool> selected: false;
+    
+    callback clicked();
+    callback double-clicked();
+    callback toggle-expand();
+    
+    height: 28px;
+    background: selected ? Theme.primary.with-alpha(0.2) : (touch.has-hover ? Theme.surface-elevated : transparent);
+    border-radius: Theme.radius-sm;
+    
+    animate background { duration: Theme.animation-fast; }
+    
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+        double-clicked => { root.double-clicked(); }
+        mouse-cursor: pointer;
+    }
+    
+    HorizontalLayout {
+        padding-left: Theme.spacing-sm + (indent-level * 16px);
+        padding-right: Theme.spacing-sm;
+        spacing: Theme.spacing-xs;
+        alignment: start;
+        
+        if is-folder: TouchArea {
+            width: 16px;
+            height: 16px;
+            clicked => { root.toggle-expand(); }
+            
+            Text {
+                text: expanded ? "▼" : "▶";
+                color: Theme.text-muted;
+                font-size: 10px;
+                vertical-alignment: center;
+                horizontal-alignment: center;
+            }
+        }
+        
+        if !is-folder: Rectangle {
+            width: 16px;
+        }
+        
+        // File/Folder icon placeholder
+        Rectangle {
+            width: 16px;
+            height: 16px;
+            background: is-folder ? Theme.warning.with-alpha(0.3) : Theme.secondary.with-alpha(0.3);
+            border-radius: 2px;
+            
+            Text {
+                text: is-folder ? "📁" : "📄";
+                font-size: 10px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        
+        Text {
+            text: name;
+            color: Theme.text-primary;
+            font-size: 13px;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+    }
+}
+
+// Tab Item for Editor
+component EditorTab inherits Rectangle {
+    in property <string> filename: "untitled.rs";
+    in property <bool> active: false;
+    in property <bool> dirty: false;
+    
+    callback clicked();
+    callback close();
+    
+    min-width: 120px;
+    max-width: 200px;
+    height: 36px;
+    background: active ? Theme.surface-elevated : (touch.has-hover ? Theme.surface : transparent);
+    border-radius: Theme.radius-md;
+    border-width: active ? 0px : 0px;
+    border-color: Theme.border;
+    
+    // Active indicator
+    Rectangle {
+        x: 0;
+        y: parent.height - 2px;
+        width: parent.width;
+        height: 2px;
+        background: active ? Theme.primary : transparent;
+        border-radius: 1px;
+    }
+    
+    animate background { duration: Theme.animation-fast; }
+    
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+    
+    HorizontalLayout {
+        padding-left: Theme.spacing-md;
+        padding-right: Theme.spacing-sm;
+        spacing: Theme.spacing-sm;
+        alignment: space-between;
+        
+        HorizontalLayout {
+            spacing: Theme.spacing-xs;
+            
+            if dirty: Text {
+                text: "●";
+                color: Theme.warning;
+                font-size: 10px;
+                vertical-alignment: center;
+            }
+            
+            Text {
+                text: filename;
+                color: active ? Theme.text-primary : Theme.text-secondary;
+                font-size: 12px;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+        }
+        
+        TouchArea {
+            width: 20px;
+            height: 20px;
+            clicked => { root.close(); }
+            mouse-cursor: pointer;
+            
+            Rectangle {
+                width: 100%;
+                height: 100%;
+                background: parent.has-hover ? Theme.error.with-alpha(0.2) : transparent;
+                border-radius: Theme.radius-sm;
+                
+                Text {
+                    text: "✕";
+                    color: parent.parent.has-hover ? Theme.error : Theme.text-muted;
+                    font-size: 12px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}
+
+// Console Output Line
+component ConsoleLine inherits Rectangle {
+    in property <string> text: "";
+    in property <string> level: "info"; // info, warning, error, debug
+    
+    height: 20px;
+    
+    HorizontalLayout {
+        padding-left: Theme.spacing-sm;
+        spacing: Theme.spacing-sm;
+        
+        Rectangle {
+            width: 4px;
+            height: 14px;
+            y: 3px;
+            border-radius: 2px;
+            background: level == "error" ? Theme.error : 
+                       level == "warning" ? Theme.warning : 
+                       level == "debug" ? Theme.secondary : 
+                       Theme.success;
+        }
+        
+        Text {
+            text: root.text;
+            color: level == "error" ? Theme.error : Theme.text-secondary;
+            font-size: 12px;
+            font-family: "JetBrains Mono, Consolas, monospace";
+            vertical-alignment: center;
+        }
+    }
+}
+
+// ============================================================================
+// MAIN APPLICATION WINDOW
+// ============================================================================
+
+export component MainWindow inherits Window {
+    // Window Properties
+    title: "R-Droid 2026 - Android IDE";
+    min-width: 1200px;
+    min-height: 800px;
+    background: Theme.background;
+    
+    // State Properties
+    in-out property <bool> sidebar-visible: true;
+    in-out property <bool> preview-visible: true;
+    in-out property <bool> console-visible: true;
+    in-out property <int> sidebar-width: 280;
+    in-out property <int> preview-width: 400;
+    in-out property <int> console-height: 200;
+    
+    // File Tree
+    in-out property <[{name: string, is-folder: bool, indent: int, expanded: bool}]> file-tree: [
+        { name: "src", is-folder: true, indent: 0, expanded: true },
+        { name: "lib.rs", is-folder: false, indent: 1, expanded: false },
+        { name: "main.rs", is-folder: false, indent: 1, expanded: false },
+        { name: "Cargo.toml", is-folder: false, indent: 0, expanded: false },
+    ];
+    
+    // Open Tabs
+    in-out property <[{filename: string, active: bool, dirty: bool}]> open-tabs: [
+        { filename: "main.rs", active: true, dirty: false },
+    ];
+    
+    // Console Output
+    in-out property <[{text: string, level: string}]> console-output: [
+        { text: "R-Droid 2026 initialized", level: "info" },
+        { text: "Ready to build Android apps!", level: "info" },
+    ];
+    
+    // Editor Content
+    in-out property <string> editor-content: "// Welcome to R-Droid 2026!\n// Start coding your Android app here.\n\nfn main() {\n    println!(\"Hello, Android!\");\n}";
+    
+    // Build Progress
+    in-out property <bool> building: false;
+    in-out property <float> build-progress: 0.0;
+    in-out property <string> build-status: "Ready";
+    
+    // Callbacks
+    callback file-selected(int);
+    callback tab-selected(int);
+    callback tab-closed(int);
+    callback build-clicked();
+    callback run-clicked();
+    callback new-project-clicked();
+    callback open-project-clicked();
+    callback settings-clicked();
+    
+    // Main Layout
+    VerticalLayout {
+        // Title Bar / Toolbar
+        Rectangle {
+            height: 48px;
+            background: Theme.surface;
+            border-width: 0 0 1px 0;
+            border-color: Theme.border;
+            
+            HorizontalLayout {
+                padding: Theme.spacing-sm;
+                spacing: Theme.spacing-md;
+                alignment: space-between;
+                
+                // Left: Logo & Project Actions
+                HorizontalLayout {
+                    spacing: Theme.spacing-md;
+                    alignment: start;
+                    
+                    // Logo
+                    Rectangle {
+                        width: 36px;
+                        height: 36px;
+                        background: @linear-gradient(135deg, Theme.primary 0%, Theme.secondary 100%);
+                        border-radius: Theme.radius-md;
+                        
+                        Text {
+                            text: "R";
+                            color: white;
+                            font-size: 20px;
+                            font-weight: 700;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    Text {
+                        text: "R-Droid 2026";
+                        color: Theme.text-primary;
+                        font-size: 16px;
+                        font-weight: 600;
+                        vertical-alignment: center;
+                    }
+                    
+                    Rectangle { width: 1px; height: 24px; background: Theme.border; }
+                    
+                    NeonButton {
+                        text: "New Project";
+                        button-color: Theme.surface-elevated;
+                        clicked => { new-project-clicked(); }
+                    }
+                    
+                    NeonButton {
+                        text: "Open";
+                        button-color: Theme.surface-elevated;
+                        clicked => { open-project-clicked(); }
+                    }
+                }
+                
+                // Center: Build Actions
+                HorizontalLayout {
+                    spacing: Theme.spacing-sm;
+                    alignment: center;
+                    
+                    NeonButton {
+                        text: building ? "Building..." : "Build";
+                        button-color: Theme.success;
+                        enabled: !building;
+                        clicked => { build-clicked(); }
+                    }
+                    
+                    NeonButton {
+                        text: "Run";
+                        button-color: Theme.primary;
+                        enabled: !building;
+                        clicked => { run-clicked(); }
+                    }
+                    
+                    if building: HorizontalLayout {
+                        spacing: Theme.spacing-sm;
+                        
+                        ProgressIndicator {
+                            width: 150px;
+                            height: 8px;
+                            progress: build-progress;
+                        }
+                        
+                        Text {
+                            text: build-status;
+                            color: Theme.text-secondary;
+                            font-size: 12px;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+                
+                // Right: Settings & View Toggle
+                HorizontalLayout {
+                    spacing: Theme.spacing-xs;
+                    alignment: end;
+                    
+                    IconButton {
+                        active: sidebar-visible;
+                        tooltip: "Toggle Sidebar";
+                        clicked => { sidebar-visible = !sidebar-visible; }
+                    }
+                    
+                    IconButton {
+                        active: console-visible;
+                        tooltip: "Toggle Console";
+                        clicked => { console-visible = !console-visible; }
+                    }
+                    
+                    IconButton {
+                        active: preview-visible;
+                        tooltip: "Toggle Preview";
+                        clicked => { preview-visible = !preview-visible; }
+                    }
+                    
+                    Rectangle { width: 1px; height: 24px; background: Theme.border; }
+                    
+                    IconButton {
+                        tooltip: "Settings";
+                        clicked => { settings-clicked(); }
+                    }
+                }
+            }
+        }
+        
+        // Main Content Area
+        HorizontalLayout {
+            // Sidebar - File Explorer
+            if sidebar-visible: Rectangle {
+                width: sidebar-width * 1px;
+                background: Theme.surface;
+                border-width: 0 1px 0 0;
+                border-color: Theme.border;
+                
+                VerticalLayout {
+                    padding: Theme.spacing-sm;
+                    spacing: Theme.spacing-sm;
+                    
+                    // Sidebar Header
+                    HorizontalLayout {
+                        height: 32px;
+                        padding-left: Theme.spacing-sm;
+                        padding-right: Theme.spacing-sm;
+                        
+                        Text {
+                            text: "EXPLORER";
+                            color: Theme.text-muted;
+                            font-size: 11px;
+                            font-weight: 600;
+                            letter-spacing: 1px;
+                            vertical-alignment: center;
+                        }
+                    }
+                    
+                    // File Tree
+                    ScrollView {
+                        viewport-height: file-tree.length * 28px;
+                        
+                        VerticalLayout {
+                            spacing: 2px;
+                            
+                            for item[index] in file-tree: FileTreeItem {
+                                name: item.name;
+                                is-folder: item.is-folder;
+                                indent-level: item.indent;
+                                expanded: item.expanded;
+                                clicked => { file-selected(index); }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Center - Editor Area
+            VerticalLayout {
+                // Tab Bar
+                Rectangle {
+                    height: 40px;
+                    background: Theme.surface;
+                    border-width: 0 0 1px 0;
+                    border-color: Theme.border;
+                    
+                    HorizontalLayout {
+                        padding: Theme.spacing-xs;
+                        spacing: Theme.spacing-xs;
+                        alignment: start;
+                        
+                        for tab[index] in open-tabs: EditorTab {
+                            filename: tab.filename;
+                            active: tab.active;
+                            dirty: tab.dirty;
+                            clicked => { tab-selected(index); }
+                            close => { tab-closed(index); }
+                        }
+                    }
+                }
+                
+                // Editor Content
+                Rectangle {
+                    background: Theme.background;
+                    
+                    VerticalLayout {
+                        padding: Theme.spacing-md;
+                        
+                        // Line numbers + Content
+                        HorizontalLayout {
+                            spacing: Theme.spacing-md;
+                            
+                            // Line numbers
+                            Rectangle {
+                                width: 40px;
+                                
+                                VerticalLayout {
+                                    for i in 20: Text {
+                                        text: "\{i + 1}";
+                                        color: Theme.text-muted;
+                                        font-size: 13px;
+                                        font-family: "JetBrains Mono, Consolas, monospace";
+                                        horizontal-alignment: right;
+                                        height: 20px;
+                                    }
+                                }
+                            }
+                            
+                            // Code content
+                            Rectangle {
+                                background: transparent;
+                                
+                                Text {
+                                    text: editor-content;
+                                    color: Theme.text-primary;
+                                    font-size: 13px;
+                                    font-family: "JetBrains Mono, Consolas, monospace";
+                                    wrap: no-wrap;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Console Panel
+                if console-visible: Rectangle {
+                    height: console-height * 1px;
+                    background: Theme.surface;
+                    border-width: 1px 0 0 0;
+                    border-color: Theme.border;
+                    
+                    VerticalLayout {
+                        // Console Header
+                        Rectangle {
+                            height: 32px;
+                            background: Theme.surface-elevated;
+                            
+                            HorizontalLayout {
+                                padding-left: Theme.spacing-md;
+                                padding-right: Theme.spacing-md;
+                                spacing: Theme.spacing-md;
+                                alignment: start;
+                                
+                                Text {
+                                    text: "CONSOLE";
+                                    color: Theme.text-muted;
+                                    font-size: 11px;
+                                    font-weight: 600;
+                                    letter-spacing: 1px;
+                                    vertical-alignment: center;
+                                }
+                                
+                                Text {
+                                    text: "OUTPUT";
+                                    color: Theme.primary;
+                                    font-size: 11px;
+                                    font-weight: 600;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+                        
+                        // Console Content
+                        ScrollView {
+                            VerticalLayout {
+                                padding: Theme.spacing-sm;
+                                spacing: 2px;
+                                
+                                for line in console-output: ConsoleLine {
+                                    text: line.text;
+                                    level: line.level;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Right - Preview Panel
+            if preview-visible: Rectangle {
+                width: preview-width * 1px;
+                background: Theme.surface;
+                border-width: 0 0 0 1px;
+                border-color: Theme.border;
+                
+                VerticalLayout {
+                    // Preview Header
+                    Rectangle {
+                        height: 40px;
+                        background: Theme.surface-elevated;
+                        
+                        HorizontalLayout {
+                            padding: Theme.spacing-md;
+                            spacing: Theme.spacing-sm;
+                            alignment: space-between;
+                            
+                            Text {
+                                text: "DEVICE PREVIEW";
+                                color: Theme.text-muted;
+                                font-size: 11px;
+                                font-weight: 600;
+                                letter-spacing: 1px;
+                                vertical-alignment: center;
+                            }
+                            
+                            ComboBox {
+                                width: 140px;
+                                model: ["Pixel 6", "Pixel 7", "Galaxy S23"];
+                                current-index: 0;
+                            }
+                        }
+                    }
+                    
+                    // Phone Frame
+                    Rectangle {
+                        background: Theme.background;
+                        
+                        VerticalLayout {
+                            alignment: center;
+                            padding: Theme.spacing-lg;
+                            
+                            // Phone mockup
+                            Rectangle {
+                                width: 220px;
+                                height: 450px;
+                                background: #1a1a24;
+                                border-radius: 24px;
+                                border-width: 3px;
+                                border-color: Theme.border;
+                                
+                                // Screen
+                                Rectangle {
+                                    x: 10px;
+                                    y: 10px;
+                                    width: parent.width - 20px;
+                                    height: parent.height - 20px;
+                                    background: Theme.surface;
+                                    border-radius: 20px;
+                                    
+                                    // Status bar
+                                    Rectangle {
+                                        x: 0;
+                                        y: 0;
+                                        width: 100%;
+                                        height: 24px;
+                                        background: Theme.surface-elevated;
+                                        border-radius: 20px 20px 0 0;
+                                        
+                                        HorizontalLayout {
+                                            padding-left: Theme.spacing-md;
+                                            padding-right: Theme.spacing-md;
+                                            alignment: space-between;
+                                            
+                                            Text {
+                                                text: "12:00";
+                                                color: Theme.text-primary;
+                                                font-size: 11px;
+                                                vertical-alignment: center;
+                                            }
+                                            
+                                            Text {
+                                                text: "🔋 100%";
+                                                color: Theme.text-primary;
+                                                font-size: 11px;
+                                                vertical-alignment: center;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // App content placeholder
+                                    VerticalLayout {
+                                        y: 30px;
+                                        padding: Theme.spacing-md;
+                                        alignment: center;
+                                        
+                                        Text {
+                                            text: "📱";
+                                            font-size: 48px;
+                                            horizontal-alignment: center;
+                                        }
+                                        
+                                        Text {
+                                            text: "Your App Preview";
+                                            color: Theme.text-secondary;
+                                            font-size: 14px;
+                                            horizontal-alignment: center;
+                                        }
+                                        
+                                        Text {
+                                            text: "Build & Run to see preview";
+                                            color: Theme.text-muted;
+                                            font-size: 12px;
+                                            horizontal-alignment: center;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Status Bar
+        Rectangle {
+            height: 24px;
+            background: Theme.surface;
+            border-width: 1px 0 0 0;
+            border-color: Theme.border;
+            
+            HorizontalLayout {
+                padding-left: Theme.spacing-md;
+                padding-right: Theme.spacing-md;
+                spacing: Theme.spacing-lg;
+                alignment: space-between;
+                
+                HorizontalLayout {
+                    spacing: Theme.spacing-md;
+                    
+                    Text {
+                        text: "R-Droid 2026";
+                        color: Theme.text-muted;
+                        font-size: 11px;
+                        vertical-alignment: center;
+                    }
+                    
+                    Rectangle { width: 1px; height: 12px; background: Theme.border; }
+                    
+                    Text {
+                        text: "🟢 Ready";
+                        color: Theme.success;
+                        font-size: 11px;
+                        vertical-alignment: center;
+                    }
+                }
+                
+                HorizontalLayout {
+                    spacing: Theme.spacing-md;
+                    
+                    Text {
+                        text: "Rust";
+                        color: Theme.text-muted;
+                        font-size: 11px;
+                        vertical-alignment: center;
+                    }
+                    
+                    Text {
+                        text: "UTF-8";
+                        color: Theme.text-muted;
+                        font-size: 11px;
+                        vertical-alignment: center;
+                    }
+                    
+                    Text {
+                        text: "Ln 1, Col 1";
+                        color: Theme.text-muted;
+                        font-size: 11px;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ============================================================================
+// DIALOGS
+// ============================================================================
+
+export component NewProjectDialog inherits Window {
+    title: "New Android Project";
+    min-width: 500px;
+    min-height: 400px;
+    background: Theme.background;
+    
+    in-out property <string> project-name: "MyAndroidApp";
+    in-out property <string> package-name: "com.example.myapp";
+    in-out property <int> project-type: 0; // 0: Rust, 1: Kotlin
+    in-out property <int> min-sdk: 24;
+    in-out property <int> target-sdk: 34;
+    
+    callback create-clicked();
+    callback cancel-clicked();
+    
+    GlassPanel {
+        title: "Create New Android Project";
+        
+        VerticalLayout {
+            spacing: Theme.spacing-lg;
+            padding: Theme.spacing-md;
+            
+            // Project Name
+            VerticalLayout {
+                spacing: Theme.spacing-xs;
+                
+                Text {
+                    text: "Project Name";
+                    color: Theme.text-secondary;
+                    font-size: 12px;
+                }
+                
+                LineEdit {
+                    text <=> project-name;
+                    placeholder-text: "Enter project name";
+                }
+            }
+            
+            // Package Name
+            VerticalLayout {
+                spacing: Theme.spacing-xs;
+                
+                Text {
+                    text: "Package Name";
+                    color: Theme.text-secondary;
+                    font-size: 12px;
+                }
+                
+                LineEdit {
+                    text <=> package-name;
+                    placeholder-text: "com.example.app";
+                }
+            }
+            
+            // Project Type
+            VerticalLayout {
+                spacing: Theme.spacing-xs;
+                
+                Text {
+                    text: "Project Type";
+                    color: Theme.text-secondary;
+                    font-size: 12px;
+                }
+                
+                ComboBox {
+                    model: ["Rust Native (cargo-apk)", "Kotlin/Java (Gradle)"];
+                    current-index <=> project-type;
+                }
+            }
+            
+            // SDK Versions
+            HorizontalLayout {
+                spacing: Theme.spacing-lg;
+                
+                VerticalLayout {
+                    spacing: Theme.spacing-xs;
+                    
+                    Text {
+                        text: "Min SDK";
+                        color: Theme.text-secondary;
+                        font-size: 12px;
+                    }
+                    
+                    ComboBox {
+                        width: 120px;
+                        model: ["API 21", "API 24", "API 26", "API 28", "API 30"];
+                        current-index: 1;
+                    }
+                }
+                
+                VerticalLayout {
+                    spacing: Theme.spacing-xs;
+                    
+                    Text {
+                        text: "Target SDK";
+                        color: Theme.text-secondary;
+                        font-size: 12px;
+                    }
+                    
+                    ComboBox {
+                        width: 120px;
+                        model: ["API 33", "API 34", "API 35"];
+                        current-index: 1;
+                    }
+                }
+            }
+            
+            // Spacer
+            Rectangle { vertical-stretch: 1; }
+            
+            // Buttons
+            HorizontalLayout {
+                spacing: Theme.spacing-md;
+                alignment: end;
+                
+                NeonButton {
+                    text: "Cancel";
+                    button-color: Theme.surface-elevated;
+                    clicked => { cancel-clicked(); }
+                }
+                
+                NeonButton {
+                    text: "Create Project";
+                    button-color: Theme.primary;
+                    clicked => { create-clicked(); }
+                }
+            }
+        }
+    }
+}
+
+// Settings Dialog
+export component SettingsDialog inherits Window {
+    title: "Settings";
+    min-width: 600px;
+    min-height: 500px;
+    background: Theme.background;
+    
+    callback save-clicked();
+    callback cancel-clicked();
+    
+    in-out property <int> current-tab: 0;
+    
+    HorizontalLayout {
+        // Settings Navigation
+        Rectangle {
+            width: 180px;
+            background: Theme.surface;
+            border-width: 0 1px 0 0;
+            border-color: Theme.border;
+            
+            VerticalLayout {
+                padding: Theme.spacing-md;
+                spacing: Theme.spacing-xs;
+                
+                Text {
+                    text: "SETTINGS";
+                    color: Theme.text-muted;
+                    font-size: 11px;
+                    font-weight: 600;
+                    letter-spacing: 1px;
+                }
+                
+                Rectangle { height: Theme.spacing-md; }
+                
+                for item[i] in ["General", "Editor", "Android SDK", "Build", "Appearance"]: Rectangle {
+                    height: 36px;
+                    background: current-tab == i ? Theme.primary.with-alpha(0.2) : transparent;
+                    border-radius: Theme.radius-sm;
+                    
+                    TouchArea {
+                        clicked => { current-tab = i; }
+                        mouse-cursor: pointer;
+                    }
+                    
+                    HorizontalLayout {
+                        padding-left: Theme.spacing-md;
+                        
+                        Text {
+                            text: item;
+                            color: current-tab == i ? Theme.primary : Theme.text-secondary;
+                            font-size: 13px;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Settings Content
+        VerticalLayout {
+            padding: Theme.spacing-lg;
+            spacing: Theme.spacing-lg;
+            
+            Text {
+                text: "General Settings";
+                color: Theme.text-primary;
+                font-size: 18px;
+                font-weight: 600;
+            }
+            
+            // Settings content would go here based on current-tab
+            Rectangle {
+                background: Theme.surface;
+                border-radius: Theme.radius-md;
+                
+                VerticalLayout {
+                    padding: Theme.spacing-md;
+                    
+                    Text {
+                        text: "Settings content for the selected category";
+                        color: Theme.text-secondary;
+                        font-size: 13px;
+                    }
+                }
+            }
+            
+            // Spacer
+            Rectangle { vertical-stretch: 1; }
+            
+            // Action Buttons
+            HorizontalLayout {
+                spacing: Theme.spacing-md;
+                alignment: end;
+                
+                NeonButton {
+                    text: "Cancel";
+                    button-color: Theme.surface-elevated;
+                    clicked => { cancel-clicked(); }
+                }
+                
+                NeonButton {
+                    text: "Save Settings";
+                    button-color: Theme.primary;
+                    clicked => { save-clicked(); }
+                }
+            }
+        }
+    }
+}
