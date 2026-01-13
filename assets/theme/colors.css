@@ -1,0 +1,106 @@
+/* R-Droid 2026 - Dark Neon Theme Colors */
+/* Glassmorphism design tokens */
+
+:root {
+    /* Primary Colors - Neon Accents */
+    --neon-cyan: #00ffff;
+    --neon-magenta: #ff00ff;
+    --neon-green: #00ff88;
+    --neon-orange: #ff6600;
+    --neon-purple: #8b00ff;
+    
+    /* Background Colors - Deep Dark */
+    --bg-primary: #0a0a12;
+    --bg-secondary: #12121a;
+    --bg-tertiary: #1a1a24;
+    --bg-elevated: #22222e;
+    
+    /* Glass Effect */
+    --glass-bg: rgba(26, 26, 38, 0.7);
+    --glass-border: rgba(0, 255, 255, 0.2);
+    --glass-blur: 12px;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0b0;
+    --text-muted: #606070;
+    --text-accent: #00ffff;
+    
+    /* Semantic Colors */
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --error: #ff4455;
+    --info: #00aaff;
+    
+    /* Syntax Highlighting */
+    --syntax-keyword: #ff79c6;
+    --syntax-string: #f1fa8c;
+    --syntax-number: #bd93f9;
+    --syntax-comment: #6272a4;
+    --syntax-function: #50fa7b;
+    --syntax-type: #8be9fd;
+    --syntax-variable: #f8f8f2;
+    --syntax-operator: #ff79c6;
+    
+    /* Spacing Scale */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-xxl: 48px;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+    
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 400ms ease;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+    --shadow-glow-cyan: 0 0 20px rgba(0, 255, 255, 0.3);
+    --shadow-glow-magenta: 0 0 20px rgba(255, 0, 255, 0.3);
+    
+    /* Font Stack */
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    --font-sans: 'Inter', 'Segoe UI', sans-serif;
+    
+    /* Font Sizes */
+    --text-xs: 11px;
+    --text-sm: 12px;
+    --text-base: 14px;
+    --text-lg: 16px;
+    --text-xl: 18px;
+    --text-2xl: 24px;
+    --text-3xl: 32px;
+}
+
+/* Animation Keyframes */
+@keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 10px var(--neon-cyan); }
+    50% { box-shadow: 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-left {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
